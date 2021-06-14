@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
     ExportIndentSerializer
-from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent
+from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer,ShipmentDetails
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -22,28 +22,49 @@ class PostsViewSet(viewsets.ModelViewSet):
             productName=post_data["productDetails"]["productName"])
         new_rate.save()
 
+        new_shipment = ShipmentDetails.objects.create(
+        blNo = post_data["shipmentDetails"]["blNo"],
+        shipDate = post_data["shipmentDetails"]["shipDate"],
+        vesselName = post_data["shipmentDetails"]["vesselName"],
+        vesselType = post_data["shipmentDetails"]["vesselType"],
+        load = post_data["shipmentDetails"]["load"])
+        new_shipment.save()
+
+        # data=  Customer.objects.get(id=post_data["exporter"])
+        # post_data['exporter'] = [1, 2, 3]
+        data = Customer.objects.filter(id__in=post_data["exporter"])
+
+
         new_post = Imports.objects.create(
             dealDate=post_data["dealDate"], arrivalDate=post_data["arrivalDate"],
             quantity=post_data["quantity"], netWeight=post_data["netWeight"], price=post_data["price"],
-            choices=post_data["choices"], paymentTerm=post_data["paymentTerm"], status=post_data["status"],
-            shipmentDetails=post_data["shipmentDetails"], exporter=post_data["exporter"], productDetails=new_rate)
+             paymentTerm=post_data["paymentTerm"], status=post_data["status"],
+            shipmentDetails=new_shipment, exporter=list(data)[0], productDetails=new_rate)
+
         new_post.save()
+
+        # new_post.__dict__
+        #
+        # new_post.print()
         serializer = ImportSerializer(new_post)
 
         return Response(serializer.data)
 
-    def get(self, request, *args, **kwargs):
-
-        try:
-            id = request.query_params["id"]
-            if id != None:
-                imports = Imports.objects.get(id=id)
-                serializer = ImportSerializer(imports)
-        except:
-            imports = self.get_queryset()
-            serializer = ImportSerializer(imports, many=True)
-
-        return Response(serializer.data)
+    # def get(self, request, *args, **kwargs):
+    #
+    #     try:
+    #         id = request.query_params["id"]
+    #         if id != None:
+    #             imports = Imports.objects.get(id=id)
+    #             # imports.__dict__
+    #             print(imports.__dict__)
+    #
+    #             serializer = ImportSerializer(imports)
+    #     except:
+    #         imports = self.get_queryset()
+    #         serializer = ImportSerializer(imports, many=True)
+    #
+    #     return Response(serializer.data)
 
 
 class PostsRatesViewSet(viewsets.ModelViewSet):
