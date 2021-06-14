@@ -32,7 +32,7 @@ class PostsViewSet(viewsets.ModelViewSet):
 
         # data=  Customer.objects.get(id=post_data["exporter"])
         # post_data['exporter'] = [1, 2, 3]
-        data = Customer.objects.filter(id__in=post_data['exporter'])
+        data = Customer.objects.filter(id__in=post_data["exporter"])
 
 
         new_post = Imports.objects.create(
