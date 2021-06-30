@@ -4,6 +4,7 @@ from django.db import models
 # Create your models here.
 class Products(models.Model):
     productName = models.CharField(max_length=200)
+    priceInKg = models.IntegerField(default=0)
 
     def __str__(self):
         return self.productName
@@ -16,12 +17,19 @@ class ShipmentDetails(models.Model):
     vesselType = models.CharField(max_length=70)
     load = models.FloatField()
 
+    def __str__(self):
+        return self.blNo
+
 
 class Customer(models.Model):
     customerName = models.CharField(max_length=100)
     customerType = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.customerName
 
+
+# this is imports model
 class Imports(models.Model):
     payment_choices = [
         ('Cash', 'Cash'),
@@ -34,16 +42,17 @@ class Imports(models.Model):
     ]
     dealDate = models.DateField()
     arrivalDate = models.DateField()
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField()
     netWeight = models.FloatField()
-    price = models.IntegerField()
-    productDetails = models.OneToOneField(
+    productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
     status = models.CharField(max_length=9, choices=status_choices, default='Signed')
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
-    exporter = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, default='')
+    exporter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='exporters', null=True, default='')
+    partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='partners', null=True, default='')
+    indenter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='indenters', null=True, default='')
 
 
 class Exports(models.Model):
@@ -60,13 +69,15 @@ class Exports(models.Model):
     departureDate = models.DateField()
     quantity = models.IntegerField()
     netWeight = models.FloatField()
-    price = models.IntegerField()
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
     status = models.CharField(max_length=9, choices=status_choices, default='Signed')
-    productDetails = models.OneToOneField(
+    productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
+    exporter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='exporterss', null=True, default='')
+    partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='partnerss', null=True, default='')
+    indenter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='indenterss', null=True, default='')
 
 
 class Locals(models.Model):
