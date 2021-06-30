@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent
+from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer
 
 
+# Import serializer
 class ImportSerializer(serializers.ModelSerializer):
     # priority_choices = serializers.SerializerMethodField()
     #
@@ -10,8 +11,8 @@ class ImportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Imports
-        fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'price', 'productDetails', 'paymentTerm',
-                  'status', 'shipmentDetails', 'exporter')
+        fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
+                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter')
         depth = 1
 
 
@@ -23,8 +24,8 @@ class ExportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exports
-        fields = ('id', 'dealDate', 'departureDate', 'quantity', 'netWeight', 'price', 'productDetails', 'paymentTerm',
-                  'status', 'shipmentDetails')
+        fields = ('id', 'dealDate', 'departureDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
+                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter')
         depth = 1
 
 
@@ -67,6 +68,12 @@ class ExportIndentSerializer(serializers.ModelSerializer):
                   'paymentTerm',
                   'indentCommission', 'shipmentDetails')
         depth = 1
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ('id', 'customerName', 'customerType')
 
 
 class ProductSerializer(serializers.ModelSerializer):
