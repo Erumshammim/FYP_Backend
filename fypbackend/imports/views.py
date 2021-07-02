@@ -1,3 +1,4 @@
+from django.db.models import Sum, F
 from django.shortcuts import render
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
@@ -37,12 +38,14 @@ class ImportViewSet(viewsets.ModelViewSet):
         indenters = Customer.objects.get(id=post_data["indenter"])
         # data = Customer.objects.filter(id=post_data["exporter"])
         # post_data['exporter'] = [1, 2, 3]
+        # qs1 = Imports.objects.filter().values('quantity', 'priceInKg').aggregate(Sum(F('quantity') * F('priceInKg')))
+        result = Imports.objects.filter(quantity__gt=F('quantity') + F('priceInKg'))
         new_post = Imports.objects.create(
             dealDate=post_data["dealDate"], arrivalDate=post_data["arrivalDate"],
             quantity=post_data["quantity"], netWeight=post_data["netWeight"],
             paymentTerm=post_data["paymentTerm"], status=post_data["status"],
             shipmentDetails=new_shipment, exporter=exporters, partner=partners, indenter=indenters,
-            productDetails=product_data)
+            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result)
 
         new_post.save()
 
@@ -186,13 +189,13 @@ class ExportViewSet(viewsets.ModelViewSet):
         exporters = Customer.objects.get(id=post_data["exporter"])
         partners = Customer.objects.get(id=post_data["partner"])
         indenters = Customer.objects.get(id=post_data["indenter"])
-
+        totalcalc = Exports.objects.filter(quantity__gt=F('quantity') + F('priceInKg'))
         new_post = Exports.objects.create(
             dealDate=post_data["dealDate"], departureDate=post_data["departureDate"],
             quantity=post_data["quantity"], netWeight=post_data["netWeight"],
-            choices=post_data["choices"], paymentTerm=post_data["paymentTerm"], status=post_data["status"],
+            paymentTerm=post_data["paymentTerm"], status=post_data["status"],
             shipmentDetails=new_shipment, exporter=exporters, partner=partners, indenter=indenters,
-            productDetails=product_data)
+            productDetails=product_data, totalPrice=totalcalc, priceInKg=post_data["priceInKg"])
         new_post.save()
         serializer = ExportSerializer(new_post)
 
