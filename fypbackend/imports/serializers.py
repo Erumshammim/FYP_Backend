@@ -12,7 +12,7 @@ class ImportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Imports
         fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
-                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter')
+                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
         depth = 1
 
 
@@ -25,7 +25,7 @@ class ExportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exports
         fields = ('id', 'dealDate', 'departureDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
-                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter')
+                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
         depth = 1
 
 

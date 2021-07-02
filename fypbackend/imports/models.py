@@ -2,6 +2,8 @@ from django.db import models
 
 
 # Create your models here.
+
+
 class Products(models.Model):
     productName = models.CharField(max_length=200)
     priceInKg = models.IntegerField(default=0)
@@ -44,6 +46,7 @@ class Imports(models.Model):
     arrivalDate = models.DateField()
     quantity = models.PositiveIntegerField()
     netWeight = models.FloatField()
+    priceInKg = models.PositiveIntegerField(default=0)
     productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
@@ -53,6 +56,11 @@ class Imports(models.Model):
     exporter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='exporters', null=True, default='')
     partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='partners', null=True, default='')
     indenter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='indenters', null=True, default='')
+    totalPrice = models.PositiveIntegerField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.totalPrice = self.priceInKg * self.quantity
+        super(Imports, self).save(*args, **kwargs)
 
 
 class Exports(models.Model):
@@ -69,6 +77,7 @@ class Exports(models.Model):
     departureDate = models.DateField()
     quantity = models.IntegerField()
     netWeight = models.FloatField()
+    priceInKg = models.PositiveIntegerField(default=0)
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
     status = models.CharField(max_length=9, choices=status_choices, default='Signed')
     productDetails = models.ForeignKey(
@@ -78,6 +87,11 @@ class Exports(models.Model):
     exporter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='exporterss', null=True, default='')
     partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='partnerss', null=True, default='')
     indenter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='indenterss', null=True, default='')
+    totalPrice = models.PositiveIntegerField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.totalPrice = self.priceInKg * self.quantity
+        super(Exports, self).save(*args, **kwargs)
 
 
 class Locals(models.Model):
