@@ -1,4 +1,4 @@
-from django.db.models import Sum, F
+from django.db.models import F
 from django.shortcuts import render
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
@@ -357,17 +357,26 @@ class ExportIndentViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         post_data = request.data
 
-        new_rate = Products.objects.create(
-            productName=post_data["productDetails"]["productName"])
-        new_rate.save()
+        product_data = Products.objects.get(id=post_data["productDetails"])
+        new_shipment = ShipmentDetails.objects.create(
+            blNo=post_data["shipmentDetails"]["blNo"],
+            shipDate=post_data["shipmentDetails"]["shipDate"],
+            vesselName=post_data["shipmentDetails"]["vesselName"],
+            vesselType=post_data["shipmentDetails"]["vesselType"],
+            load=post_data["shipmentDetails"]["load"])
+        new_shipment.save()
+        partners = Customer.objects.get(id=post_data["partner"])
+        buyers = Customer.objects.get(id=post_data["buyer"])
+        sellers = Customer.objects.get(id=post_data["seller"])
+        totalcalc = ExportIndent.objects.filter(quantity__gt=F('quantity') + F('priceInKg'))
 
         new_post = ExportIndent.objects.create(
             dealDate=post_data["dealDate"], arrivalDate=post_data["arrivalDate"],
             departureDate=post_data["departureDate"],
-            quantity=post_data["quantity"], netWeight=post_data["netWeight"], price=post_data["price"],
-            choices=post_data["choices"], paymentTerm=post_data["paymentTerm"],
-            indentCommission=post_data["indentCommission"],
-            shipmentDetails=post_data["shipmentDetails"], productDetails=new_rate)
+            quantity=post_data["quantity"], netWeight=post_data["netWeight"], priceInKg=post_data["priceInKg"],
+            paymentTerm=post_data["paymentTerm"], indentCommission=post_data["indentCommission"],
+            shipmentDetails=new_shipment, productDetails=product_data,
+            partner=partners, buyer=buyers, seller=sellers, totalPrice=totalcalc)
         new_post.save()
         serializer = ExportIndentSerializer(new_post)
 
@@ -438,16 +447,26 @@ class ImportIndentViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         post_data = request.data
 
-        new_rate = Products.objects.create(
-            productName=post_data["productDetails"]["productName"])
-        new_rate.save()
+        product_data = Products.objects.get(id=post_data["productDetails"])
+        new_shipment = ShipmentDetails.objects.create(
+            blNo=post_data["shipmentDetails"]["blNo"],
+            shipDate=post_data["shipmentDetails"]["shipDate"],
+            vesselName=post_data["shipmentDetails"]["vesselName"],
+            vesselType=post_data["shipmentDetails"]["vesselType"],
+            load=post_data["shipmentDetails"]["load"])
+        new_shipment.save()
+        partners = Customer.objects.get(id=post_data["partner"])
+        buyers = Customer.objects.get(id=post_data["buyer"])
+        sellers = Customer.objects.get(id=post_data["seller"])
+        totalcalc = ImportIndent.objects.filter(quantity__gt=F('quantity') + F('priceInKg'))
 
         new_post = ImportIndent.objects.create(
             dealDate=post_data["dealDate"], arrivalDate=post_data["arrivalDate"],
-            quantity=post_data["quantity"], netWeight=post_data["netWeight"], price=post_data["price"],
-            choices=post_data["choices"], paymentTerm=post_data["paymentTerm"],
-            indentCommission=post_data["indentCommission"],
-            shipmentDetails=post_data["shipmentDetails"], productDetails=new_rate)
+            departureDate=post_data["departureDate"],
+            quantity=post_data["quantity"], netWeight=post_data["netWeight"], priceInKg=post_data["priceInKg"],
+            paymentTerm=post_data["paymentTerm"], indentCommission=post_data["indentCommission"],
+            shipmentDetails=new_shipment, productDetails=product_data,
+            partner=partners, buyer=buyers, seller=sellers, totalPrice=totalcalc)
         new_post.save()
         serializer = ImportIndentSerializer(new_post)
 
