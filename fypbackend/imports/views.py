@@ -150,6 +150,33 @@ class CustomerPartnerListView(viewsets.ModelViewSet):
         return partnercustomers
 
 
+# function to get customer of type broker
+class CustomerBrokerListView(viewsets.ModelViewSet):
+    serializer_class = CustomerSerializer
+
+    def get_queryset(self):
+        brokercustomers = Customer.objects.filter(customerType__startswith='broker').values()
+        return brokercustomers
+
+
+# function to get customer of type buyer
+class CustomerBuyerListView(viewsets.ModelViewSet):
+    serializer_class = CustomerSerializer
+
+    def get_queryset(self):
+        buyercustomers = Customer.objects.filter(customerType__startswith='buyer').values()
+        return buyercustomers
+
+
+# function to get customer of type seller
+class CustomerSellerListView(viewsets.ModelViewSet):
+    serializer_class = CustomerSerializer
+
+    def get_queryset(self):
+        sellercustomers = Customer.objects.filter(customerType__startswith='seller').values()
+        return sellercustomers
+
+
 # function to get all customers
 class CustomerListView(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
@@ -251,15 +278,17 @@ class LocalsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         post_data = request.data
 
-        new_rate = Products.objects.create(
-            productName=post_data["productDetails"]["productName"])
-        new_rate.save()
+        product_data = Products.objects.get(id=post_data["productDetails"])
+        partners = Customer.objects.get(id=post_data["partner"])
+        buyers = Customer.objects.get(id=post_data["buyer"])
+        brokers = Customer.objects.get(id=post_data["broker"])
+        totalcalc = Locals.objects.filter(quantity__gt=F('quantity') + F('priceInKg'))
 
         new_post = Locals.objects.create(
             dealDate=post_data["dealDate"], quantity=post_data["quantity"], netWeight=post_data["netWeight"],
-            price=post_data["price"],
-            choices=post_data["choices"], paymentTerm=post_data["paymentTerm"], status=post_data["status"],
-            load=post_data["load"], condition=post_data["condition"], productDetails=new_rate)
+            priceInKg=post_data["priceInKg"], paymentTerm=post_data["paymentTerm"], status=post_data["status"],
+            load=post_data["load"], condition=post_data["condition"], productDetails=product_data, partner=partners,
+            buyer=buyers, broker=brokers, totalPrice=totalcalc)
         new_post.save()
         serializer = LocalSerializer(new_post)
 

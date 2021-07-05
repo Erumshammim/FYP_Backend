@@ -38,8 +38,8 @@ class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Locals
         fields = (
-            'id', 'dealDate', 'quantity', 'netWeight', 'price', 'productDetails', 'load', 'condition', 'paymentTerm',
-            'status')
+            'id', 'dealDate', 'quantity', 'netWeight', 'priceInKg', 'productDetails', 'load', 'condition', 'paymentTerm',
+            'status', 'partner', 'buyer', 'broker', 'totalPrice')
         depth = 1
 
 

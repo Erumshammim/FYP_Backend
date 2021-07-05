@@ -107,13 +107,21 @@ class Locals(models.Model):
     dealDate = models.DateField()
     quantity = models.IntegerField()
     netWeight = models.FloatField()
-    price = models.IntegerField()
-    productDetails = models.OneToOneField(
+    priceInKg = models.PositiveIntegerField(default=0)
+    productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     load = models.FloatField()
     condition = models.CharField(max_length=100)
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
     status = models.CharField(max_length=9, choices=status_choices, default='Signed')
+    partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='localpartner', null=True, default='')
+    buyer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='buyer', null=True, default='')
+    broker = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='broker', null=True, default='')
+    totalPrice = models.PositiveIntegerField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.totalPrice = self.priceInKg * self.quantity
+        super(Locals, self).save(*args, **kwargs)
 
 
 class ImportIndent(models.Model):
