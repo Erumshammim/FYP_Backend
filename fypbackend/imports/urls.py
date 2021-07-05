@@ -1,6 +1,9 @@
 from django.conf.urls import url, include
 from .views import ImportViewSet, ProductViewSet, ExportViewSet, LocalsViewSet, ExportIndentViewSet, \
-    ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView, CustomerListView, CustomerPartnerListView
+    ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView, CustomerListView, \
+    CustomerPartnerListView, \
+    CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView
+
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -14,10 +17,12 @@ router.register("customerexporter", CustomerExporterListView, basename="customer
 router.register("customerimporter", CustomerImporterListView, basename="customerimporter")
 router.register("customerindenter", CustomerIndenterListView, basename="customerindenter")
 router.register("customerpartner", CustomerPartnerListView, basename="customerpartner")
+router.register("customerbroker", CustomerBrokerListView, basename="customerbroker")
+router.register("customerbuyer", CustomerBuyerListView, basename="customerbuyer")
+router.register("customerseller", CustomerSellerListView, basename="customerseller")
 router.register("allcustomers", CustomerListView, basename="allcustomers")
 
 urlpatterns = [
     url('', include(router.urls)),
     # path('customer/<int:id>/', views.CustomerListView.as_view(), name='customer')
 ]
-
