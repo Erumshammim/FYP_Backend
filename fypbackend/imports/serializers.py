@@ -1,9 +1,18 @@
 from rest_framework import serializers
-from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer
+from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails
+
+
+# shipment Serializer
+class ShipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShipmentDetails
+        fields = ('id', 'blNo', 'shipDate', 'vesselName', 'vesselType', 'load')
 
 
 # Import serializer
 class ImportSerializer(serializers.ModelSerializer):
+    shipmentDetails = ShipmentSerializer()
+
     # priority_choices = serializers.SerializerMethodField()
     #
     def get_priority_choices(self, obj):
@@ -14,6 +23,16 @@ class ImportSerializer(serializers.ModelSerializer):
         fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
                   'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
         depth = 1
+
+    # def update(self, instance, validated_data):
+    #     if validated_data.get("shipmentDetails"):
+    #         shipmentDetails = validated_data.pop('shipmentDetails')
+    #         shipmentDetails = ShipmentDetails.objects.get(id=self.initial_data["shipmentDetails"]["id"])
+    #         scene_task = super(ImportSerializer, self, ).update(instance, validated_data)
+    #         scene_task.scene = shipmentDetails
+    #         scene_task.save()
+    #         return scene_task
+    #     return super(ImportSerializer, self, ).update(instance, validated_data)
 
 
 class ExportSerializer(serializers.ModelSerializer):
@@ -38,7 +57,8 @@ class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Locals
         fields = (
-            'id', 'dealDate', 'quantity', 'netWeight', 'priceInKg', 'productDetails', 'load', 'condition', 'paymentTerm',
+            'id', 'dealDate', 'quantity', 'netWeight', 'priceInKg', 'productDetails', 'load', 'condition',
+            'paymentTerm',
             'status', 'partner', 'buyer', 'broker', 'totalPrice')
         depth = 1
 
@@ -51,8 +71,9 @@ class ImportIndentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ImportIndent
-        fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'price', 'productDetails', 'paymentTerm',
-                  'indentCommission', 'shipmentDetails')
+        fields = ('id', 'dealDate', 'arrivalDate', 'departureDate', 'quantity', 'netWeight', 'priceInKg',
+                  'productDetails', 'paymentTerm',
+                  'indentCommission', 'shipmentDetails', 'partner', 'buyer', 'seller', 'totalPrice')
         depth = 1
 
 
@@ -64,9 +85,9 @@ class ExportIndentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExportIndent
-        fields = ('id', 'dealDate', 'arrivalDate', 'departureDate', 'quantity', 'netWeight', 'price', 'productDetails',
-                  'paymentTerm',
-                  'indentCommission', 'shipmentDetails')
+        fields = ('id', 'dealDate', 'arrivalDate', 'departureDate', 'quantity', 'netWeight', 'priceInKg',
+                  'productDetails', 'paymentTerm',
+                  'indentCommission', 'shipmentDetails', 'partner', 'buyer', 'seller', 'totalPrice')
         depth = 1
 
 

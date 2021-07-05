@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 
 # Create your models here.
@@ -124,6 +125,7 @@ class Locals(models.Model):
         super(Locals, self).save(*args, **kwargs)
 
 
+# this is import indent table
 class ImportIndent(models.Model):
     payment_choices = [
         ('Cash', 'Cash'),
@@ -131,17 +133,28 @@ class ImportIndent(models.Model):
     ]
     dealDate = models.DateField()
     arrivalDate = models.DateField()
+    departureDate = models.DateField(default=datetime.now)
     quantity = models.IntegerField()
     netWeight = models.FloatField()
-    price = models.IntegerField()
-    productDetails = models.OneToOneField(
+    priceInKg = models.PositiveIntegerField(default=0)
+    productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
     indentCommission = models.IntegerField()
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
+    partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='importindentpartner', null=True,
+                                default='')
+    buyer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='buyers', null=True, default='')
+    seller = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='seller', null=True, default='')
+    totalPrice = models.PositiveIntegerField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.totalPrice = self.priceInKg * self.quantity
+        super(ImportIndent, self).save(*args, **kwargs)
 
 
+# this is export indent table
 class ExportIndent(models.Model):
     payment_choices = [
         ('Cash', 'Cash'),
@@ -152,10 +165,21 @@ class ExportIndent(models.Model):
     departureDate = models.DateField()
     quantity = models.IntegerField()
     netWeight = models.FloatField()
-    price = models.IntegerField()
-    productDetails = models.OneToOneField(
+    priceInKg = models.PositiveIntegerField(default=0)
+    productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
     indentCommission = models.IntegerField()
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
+    partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='exportindentpartner', null=True,
+                                default='')
+    buyer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='exportindentbuyer', null=True,
+                              default='')
+    seller = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='exportindentseller', null=True,
+                               default='')
+    totalPrice = models.PositiveIntegerField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.totalPrice = self.priceInKg * self.quantity
+        super(ExportIndent, self).save(*args, **kwargs)
