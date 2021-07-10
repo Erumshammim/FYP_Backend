@@ -1,4 +1,6 @@
 from django.conf.urls import url, include
+from django.urls import path
+
 from .views import ImportViewSet, ProductViewSet, ExportViewSet, LocalsViewSet, ExportIndentViewSet, \
     ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView, CustomerListView, \
     CustomerPartnerListView, \
@@ -23,6 +25,8 @@ router.register("customerseller", CustomerSellerListView, basename="customersell
 router.register("allcustomers", CustomerListView, basename="allcustomers")
 
 urlpatterns = [
-    url('', include(router.urls)),
-    # path('customer/<int:id>/', views.CustomerListView.as_view(), name='customer')
+    # url(r'^api/imports/(?P<pk>\d+)/$', UpdateImport.as_view()),
+    # url('', include(router.urls)),
+
 ]
+urlpatterns += router.urls

@@ -4,7 +4,7 @@ from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, 
     LocalSerializer, ImportIndentSerializer, \
     ExportIndentSerializer, CustomerSerializer
 from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.response import Response
 
 
@@ -76,16 +76,17 @@ class ImportViewSet(viewsets.ModelViewSet):
         import_object = Imports.objects.get(id=id)
 
         data = request.data
-
+        # import_update = Products.objects.get(id=data["productDetails"])
+        # import_update.save(update_fields=['id'])
         import_object.dealDate = data["dealDate"]
         import_object.arrivalDate = data["arrivalDate"]
         import_object.quantity = data["quantity"]
         import_object.netWeight = data["netWeight"]
         import_object.paymentTerm = data[" paymentTerm"]
         import_object.status = data[" status"]
-        import_object.productDetails = data[" productDetails"]
-        import_object.shipmentDetails = data[" shipmentDetails"]
-        import_object.exporter = data["exporter"]
+        import_object.productDetails = data["productDetails"]
+        import_object.shipmentDetails = data["shipmentDetails"]
+        import_object.exporter = Imports.objects.filter(id=data).update(data["exporter"])
         import_object.partner = data["partner"]
         import_object.indenter = data["indenter"]
         import_object.save()
@@ -499,7 +500,7 @@ class ImportIndentViewSet(viewsets.ModelViewSet):
         importindent_object.paymentTerm = data[" paymentTerm"]
         importindent_object.indentCommission = data[" indentCommission"]
         importindent_object.productDetails = data[" productDetails"]
-        importindent_object.shipmentDetails = data[" shipmentDetails"]
+        importindent_object.shipmentDetails = data["shipmentDetails"]
         importindent_object.save()
         serializer = ImportIndentSerializer(importindent_object)
         return Response(serializer.data)
