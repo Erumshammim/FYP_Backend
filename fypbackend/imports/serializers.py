@@ -14,28 +14,28 @@ class ImportSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
 
     # priority_choices = serializers.SerializerMethodField()
-    #
+
     def get_priority_choices(self, obj):
         return [choice[0] for choice in Imports.payment_choices]
 
     class Meta:
         model = Imports
-        fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
-                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
+        fields = '__all__'
+        # fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
+        #           'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
         depth = 1
 
-    # def update(self, instance, validated_data):
-    #     if validated_data.get("shipmentDetails"):
-    #         shipmentDetails = validated_data.pop('shipmentDetails')
-    #         shipmentDetails = ShipmentDetails.objects.get(id=self.initial_data["shipmentDetails"]["id"])
-    #         scene_task = super(ImportSerializer, self, ).update(instance, validated_data)
-    #         scene_task.scene = shipmentDetails
-    #         scene_task.save()
-    #         return scene_task
-    #     return super(ImportSerializer, self, ).update(instance, validated_data)
+    def update(self, instance, validated_data):
+        nested_serializer = self.fields['shipmentDetails']
+        nested_instance = instance.shipmentDetails
+        nested_data = validated_data.pop('shipmentDetails')
+        nested_serializer.update(nested_instance, nested_data)
+        return super(ImportSerializer, self).update(instance, validated_data)
 
 
 class ExportSerializer(serializers.ModelSerializer):
+    shipmentDetails = ShipmentSerializer()
+
     # priority_choices = serializers.SerializerMethodField()
     #
     def get_priority_choices(self, obj):
@@ -43,9 +43,17 @@ class ExportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exports
-        fields = ('id', 'dealDate', 'departureDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
-                  'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
+        fields = '__all__'
+        # fields = ('id', 'dealDate', 'departureDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
+        #           'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
         depth = 1
+
+    def update(self, instance, validated_data):
+        nested_serializer = self.fields['shipmentDetails']
+        nested_instance = instance.shipmentDetails
+        nested_data = validated_data.pop('shipmentDetails')
+        nested_serializer.update(nested_instance, nested_data)
+        return super(ExportSerializer, self).update(instance, validated_data)
 
 
 class LocalSerializer(serializers.ModelSerializer):
@@ -64,6 +72,8 @@ class LocalSerializer(serializers.ModelSerializer):
 
 
 class ImportIndentSerializer(serializers.ModelSerializer):
+    shipmentDetails = ShipmentSerializer()
+
     # priority_choices = serializers.SerializerMethodField()
     #
     def get_priority_choices(self, obj):
@@ -71,24 +81,39 @@ class ImportIndentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ImportIndent
-        fields = ('id', 'dealDate', 'arrivalDate', 'departureDate', 'quantity', 'netWeight', 'priceInKg',
-                  'productDetails', 'paymentTerm',
-                  'indentCommission', 'shipmentDetails', 'partner', 'buyer', 'seller', 'totalPrice')
+        fields = '__all__'
         depth = 1
+
+    def update(self, instance, validated_data):
+        nested_serializer = self.fields['shipmentDetails']
+        nested_instance = instance.shipmentDetails
+        nested_data = validated_data.pop('shipmentDetails')
+        nested_serializer.update(nested_instance, nested_data)
+        return super(ImportIndentSerializer, self).update(instance, validated_data)
 
 
 class ExportIndentSerializer(serializers.ModelSerializer):
+    shipmentDetails = ShipmentSerializer()
+
     # priority_choices = serializers.SerializerMethodField()
-    #
+
     def get_priority_choices(self, obj):
         return [choice[0] for choice in ExportIndent.payment_choices]
 
     class Meta:
         model = ExportIndent
-        fields = ('id', 'dealDate', 'arrivalDate', 'departureDate', 'quantity', 'netWeight', 'priceInKg',
-                  'productDetails', 'paymentTerm',
-                  'indentCommission', 'shipmentDetails', 'partner', 'buyer', 'seller', 'totalPrice')
+        fields = '__all__'
+        # fields = ('id', 'dealDate', 'arrivalDate', 'departureDate', 'quantity', 'netWeight', 'priceInKg',
+        #           'productDetails', 'paymentTerm',
+        #           'indentCommission', 'shipmentDetails', 'partner', 'buyer', 'seller', 'totalPrice')
         depth = 1
+
+    def update(self, instance, validated_data):
+        nested_serializer = self.fields['shipmentDetails']
+        nested_instance = instance.shipmentDetails
+        nested_data = validated_data.pop('shipmentDetails')
+        nested_serializer.update(nested_instance, nested_data)
+        return super(ExportIndentSerializer, self).update(instance, validated_data)
 
 
 class CustomerSerializer(serializers.ModelSerializer):
