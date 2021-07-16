@@ -1,5 +1,4 @@
 from django.db import models
-from datetime import datetime
 
 
 # Create your models here.
@@ -133,7 +132,6 @@ class ImportIndent(models.Model):
     ]
     dealDate = models.DateField()
     arrivalDate = models.DateField()
-    departureDate = models.DateField(default=datetime.now)
     quantity = models.IntegerField()
     netWeight = models.FloatField()
     priceInKg = models.PositiveIntegerField(default=0)
@@ -161,7 +159,6 @@ class ExportIndent(models.Model):
         ('Card', 'Card'),
     ]
     dealDate = models.DateField()
-    arrivalDate = models.DateField()
     departureDate = models.DateField()
     quantity = models.IntegerField()
     netWeight = models.FloatField()
