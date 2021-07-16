@@ -9,6 +9,13 @@ class ShipmentSerializer(serializers.ModelSerializer):
         fields = ('id', 'blNo', 'shipDate', 'vesselName', 'vesselType', 'load')
 
 
+# Product serializer
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Products
+        fields = '__all__'
+
+
 # Import serializer
 class ImportSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
@@ -32,7 +39,17 @@ class ImportSerializer(serializers.ModelSerializer):
         nested_serializer.update(nested_instance, nested_data)
         return super(ImportSerializer, self).update(instance, validated_data)
 
+    # def update(self, instance, validated_data):
+    #     person_data = validated_data.get('productDetails')
+    #     instance.productDetails.id = person_data.get(
+    #         'id',
+    #         instance.productDetails.id
+    #     )
+    #     instance.productDetails.save()
+    #     return instance
 
+
+# export serializer
 class ExportSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
 
@@ -56,6 +73,7 @@ class ExportSerializer(serializers.ModelSerializer):
         return super(ExportSerializer, self).update(instance, validated_data)
 
 
+# local serializer
 class LocalSerializer(serializers.ModelSerializer):
     # priority_choices = serializers.SerializerMethodField()
     #
@@ -71,6 +89,7 @@ class LocalSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+# importindent serializer
 class ImportIndentSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
 
@@ -92,6 +111,7 @@ class ImportIndentSerializer(serializers.ModelSerializer):
         return super(ImportIndentSerializer, self).update(instance, validated_data)
 
 
+# exportindent serializer
 class ExportIndentSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
 
@@ -116,13 +136,8 @@ class ExportIndentSerializer(serializers.ModelSerializer):
         return super(ExportIndentSerializer, self).update(instance, validated_data)
 
 
+# customer serializer
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ('id', 'customerName', 'customerType')
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Products
-        fields = '__all__'
