@@ -1,10 +1,11 @@
 from django.db.models import F
 from django.shortcuts import render
+from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
     ExportIndentSerializer, CustomerSerializer
 from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails
-from rest_framework import viewsets, generics
+from rest_framework import viewsets
 from rest_framework.response import Response
 
 
@@ -12,6 +13,7 @@ from rest_framework.response import Response
 # API for Import module
 class ImportViewSet(viewsets.ModelViewSet):
     serializer_class = ImportSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         posts = Imports.objects.all()
@@ -42,7 +44,8 @@ class ImportViewSet(viewsets.ModelViewSet):
             quantity=post_data["quantity"], netWeight=post_data["netWeight"],
             paymentTerm=post_data["paymentTerm"], status=post_data["status"],
             shipmentDetails=new_shipment, exporter=exporters, partner=partners, indenter=indenters,
-            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result)
+            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result,
+            image=post_data["image"])
 
         new_post.save()
 
