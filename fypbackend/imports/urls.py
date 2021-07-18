@@ -1,12 +1,12 @@
-from django.conf.urls import url, include
-from django.urls import path
-
+from django.conf.urls import url
 from .views import ImportViewSet, ProductViewSet, ExportViewSet, LocalsViewSet, ExportIndentViewSet, \
     ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView, CustomerListView, \
     CustomerPartnerListView, \
     CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView
 
 from rest_framework.routers import DefaultRouter
+from django.conf import settings
+from django.conf.urls.static import static
 
 router = DefaultRouter()
 router.register("imports", ImportViewSet, basename="imports")
@@ -30,3 +30,4 @@ urlpatterns = [
 
 ]
 urlpatterns += router.urls
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
