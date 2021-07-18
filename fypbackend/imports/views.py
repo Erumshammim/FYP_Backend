@@ -36,9 +36,6 @@ class ImportViewSet(viewsets.ModelViewSet):
         exporters = Customer.objects.get(id=post_data["exporter"])
         partners = Customer.objects.get(id=post_data["partner"])
         indenters = Customer.objects.get(id=post_data["indenter"])
-        # data = Customer.objects.filter(id=post_data["exporter"])
-        # post_data['exporter'] = [1, 2, 3]
-        # qs1 = Imports.objects.filter().values('quantity', 'priceInKg').aggregate(Sum(F('quantity') * F('priceInKg')))
         result = Imports.objects.filter(quantity__gt=F('quantity') + F('priceInKg'))
         new_post = Imports.objects.create(
             dealDate=post_data["dealDate"], arrivalDate=post_data["arrivalDate"],
@@ -76,9 +73,6 @@ class ImportViewSet(viewsets.ModelViewSet):
         import_object = Imports.objects.get(id=id)
 
         data = request.data
-        # import_update = Products.objects.get(id=data["productDetails"])
-        # import_update.save(update_fields=['id'])
-        # Products.objects.filter(id=data).update(data="productDetails")
         import_object.dealDate = data["dealDate"]
         import_object.arrivalDate = data["arrivalDate"]
         import_object.quantity = data["quantity"]
@@ -376,7 +370,8 @@ class ExportIndentViewSet(viewsets.ModelViewSet):
             dealDate=post_data["dealDate"],
             departureDate=post_data["departureDate"],
             quantity=post_data["quantity"], netWeight=post_data["netWeight"], priceInKg=post_data["priceInKg"],
-            paymentTerm=post_data["paymentTerm"], indentCommission=post_data["indentCommission"],
+            paymentTerm=post_data["paymentTerm"], status=post_data["status"],
+            indentCommission=post_data["indentCommission"],
             shipmentDetails=new_shipment, productDetails=product_data,
             partner=partners, buyer=buyers, seller=sellers, totalPrice=totalcalc)
         new_post.save()
@@ -409,6 +404,7 @@ class ExportIndentViewSet(viewsets.ModelViewSet):
         exportindent_object.netWeight = data["netWeight"]
         exportindent_object.price = data["price"]
         exportindent_object.paymentTerm = data[" paymentTerm"]
+        exportindent_object.status = data[" status"]
         exportindent_object.indentCommission = data[" indentCommission"]
         exportindent_object.productDetails = data[" productDetails"]
         exportindent_object.shipmentDetails = data[" shipmentDetails"]
@@ -426,6 +422,7 @@ class ExportIndentViewSet(viewsets.ModelViewSet):
         exportindent_object.netWeight = data.get("netWeight", exportindent_object.netWeight)
         exportindent_object.price = data.get("price", exportindent_object.price)
         exportindent_object.paymentTerm = data.get("paymentTerm", exportindent_object.paymentTerm)
+        exportindent_object.status = data.get("status", exportindent_object.status)
         exportindent_object.indentCommission = data.get("indentCommission", exportindent_object.indentCommission)
         exportindent_object.productDetails = data.get("productDetails", exportindent_object.productDetails)
         exportindent_object.shipmentDetails = data.get("shipmentDetails", exportindent_object.shipmentDetails)
@@ -463,7 +460,8 @@ class ImportIndentViewSet(viewsets.ModelViewSet):
         new_post = ImportIndent.objects.create(
             dealDate=post_data["dealDate"], arrivalDate=post_data["arrivalDate"],
             quantity=post_data["quantity"], netWeight=post_data["netWeight"], priceInKg=post_data["priceInKg"],
-            paymentTerm=post_data["paymentTerm"], indentCommission=post_data["indentCommission"],
+            paymentTerm=post_data["paymentTerm"], status=post_data["status"],
+            indentCommission=post_data["indentCommission"],
             shipmentDetails=new_shipment, productDetails=product_data,
             partner=partners, buyer=buyers, seller=sellers, totalPrice=totalcalc)
         new_post.save()
@@ -496,6 +494,7 @@ class ImportIndentViewSet(viewsets.ModelViewSet):
         importindent_object.netWeight = data["netWeight"]
         importindent_object.price = data["price"]
         importindent_object.paymentTerm = data[" paymentTerm"]
+        importindent_object.status = data[" status"]
         importindent_object.indentCommission = data[" indentCommission"]
         importindent_object.productDetails = data[" productDetails"]
         importindent_object.shipmentDetails = data["shipmentDetails"]
@@ -513,6 +512,7 @@ class ImportIndentViewSet(viewsets.ModelViewSet):
         importindent_object.netWeight = data.get("netWeight", importindent_object.netWeight)
         importindent_object.price = data.get("price", importindent_object.price)
         importindent_object.paymentTerm = data.get("paymentTerm", importindent_object.paymentTerm)
+        importindent_object.status = data.get("status", importindent_object.status)
         importindent_object.indentCommission = data.get("indentCommission", importindent_object.indentCommission)
         importindent_object.productDetails = data.get("productDetails", importindent_object.productDetails)
         importindent_object.shipmentDetails = data.get("shipmentDetails", importindent_object.shipmentDetails)

@@ -130,6 +130,11 @@ class ImportIndent(models.Model):
         ('Cash', 'Cash'),
         ('Card', 'Card'),
     ]
+    status_choices = [
+        ('Signed', 'Signed'),
+        ('Unsigned', 'Unsigned'),
+        ('Pending', 'Pending'),
+    ]
     dealDate = models.DateField()
     arrivalDate = models.DateField()
     quantity = models.IntegerField()
@@ -138,6 +143,7 @@ class ImportIndent(models.Model):
     productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
+    status = models.CharField(max_length=9, choices=status_choices, default='Signed')
     indentCommission = models.IntegerField()
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
@@ -158,6 +164,11 @@ class ExportIndent(models.Model):
         ('Cash', 'Cash'),
         ('Card', 'Card'),
     ]
+    status_choices = [
+        ('Signed', 'Signed'),
+        ('Unsigned', 'Unsigned'),
+        ('Pending', 'Pending'),
+    ]
     dealDate = models.DateField()
     departureDate = models.DateField()
     quantity = models.IntegerField()
@@ -166,6 +177,7 @@ class ExportIndent(models.Model):
     productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
+    status = models.CharField(max_length=9, choices=status_choices, default='Signed')
     indentCommission = models.IntegerField()
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
