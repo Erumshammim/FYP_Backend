@@ -3,8 +3,8 @@ from django.shortcuts import render
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
-    ExportIndentSerializer, CustomerSerializer
-from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails
+    ExportIndentSerializer, CustomerSerializer, TestApiSerializer
+from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, TestApi
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -44,8 +44,7 @@ class ImportViewSet(viewsets.ModelViewSet):
             quantity=post_data["quantity"], netWeight=post_data["netWeight"],
             paymentTerm=post_data["paymentTerm"], status=post_data["status"],
             shipmentDetails=new_shipment, exporter=exporters, partner=partners, indenter=indenters,
-            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result,
-            image=post_data["image"])
+            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result)
 
         new_post.save()
 
@@ -522,4 +521,22 @@ class ImportIndentViewSet(viewsets.ModelViewSet):
 
         importindent_object.save()
         serializer = ImportIndentSerializer(importindent_object)
+        return Response(serializer.data)
+
+
+class TestApiViewset(viewsets.ModelViewSet):
+    serializer_class = TestApiSerializer
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_queryset(self):
+        posts = TestApi.objects.all()
+        return posts
+
+    def create(self, request, *args, **kwargs):
+        post_data = request.data
+        new_post = TestApi.objects.create(
+            name=post_data["name"], cardNo=post_data["cardNo"], image=post_data["image"])
+        new_post.save()
+        serializer = TestApiSerializer(new_post)
+
         return Response(serializer.data)
