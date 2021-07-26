@@ -2,6 +2,8 @@ from django.db import models
 
 
 # Create your models here.
+def upload_to(instance, filename):
+    return 'posts/{filename}'.format(filename=filename)
 
 
 class Products(models.Model):
@@ -31,10 +33,6 @@ class Customer(models.Model):
         return self.customerName
 
 
-# def upload_to(instance, filename):
-#     return 'posts/{filename}'.format(filename=filename)
-
-
 # this is imports model
 class Imports(models.Model):
     payment_choices = [
@@ -61,8 +59,7 @@ class Imports(models.Model):
     partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='partners', null=True, default='')
     indenter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='indenters', null=True, default='')
     totalPrice = models.PositiveIntegerField(blank=True, null=True)
-
-    # image = models.ImageField(default='', blank=True, upload_to=upload_to)
+    image = models.ImageField(default='', blank=True, upload_to=upload_to)
 
     def save(self, *args, **kwargs):
         self.totalPrice = self.priceInKg * self.quantity
@@ -198,10 +195,6 @@ class ExportIndent(models.Model):
     def save(self, *args, **kwargs):
         self.totalPrice = self.priceInKg * self.quantity
         super(ExportIndent, self).save(*args, **kwargs)
-
-
-def upload_to(instance, filename):
-    return 'posts/{filename}'.format(filename=filename)
 
 
 class TestApi(models.Model):
