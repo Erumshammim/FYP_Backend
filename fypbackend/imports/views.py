@@ -44,7 +44,8 @@ class ImportViewSet(viewsets.ModelViewSet):
             quantity=post_data["quantity"], netWeight=post_data["netWeight"],
             paymentTerm=post_data["paymentTerm"], status=post_data["status"],
             shipmentDetails=new_shipment, exporter=exporters, partner=partners, indenter=indenters,
-            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result)
+            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result,
+            image=post_data["image"])
 
         new_post.save()
 
