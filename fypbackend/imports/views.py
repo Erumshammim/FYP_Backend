@@ -3,9 +3,9 @@ from django.shortcuts import render
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
-    ExportIndentSerializer, CustomerSerializer, TestApiSerializer
-from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, TestApi
-from rest_framework import viewsets
+    ExportIndentSerializer, CustomerSerializer, ImageApiSerializer
+from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image
+from rest_framework import viewsets, generics
 from rest_framework.response import Response
 
 
@@ -525,19 +525,35 @@ class ImportIndentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class TestApiViewset(viewsets.ModelViewSet):
-    serializer_class = TestApiSerializer
+class ImageApiViewset(viewsets.ModelViewSet):
+    serializer_class = ImageApiSerializer
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        posts = TestApi.objects.all()
+        posts = Image.objects.all()
         return posts
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            id = request.query_params["id"]
+            if id != None:
+                importer = Image.objects.get(id=id)
+                serializer = ImageApiSerializer(importer)
+        except:
+            importer = self.get_queryset()
+            serializer = ImportIndentSerializer(importer, many=True)
+
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         post_data = request.data
-        new_post = TestApi.objects.create(
-            name=post_data["name"], cardNo=post_data["cardNo"], image=post_data["image"])
+        new_post = Image.objects.create(
+            contractId=post_data["contractId"], image=post_data["image"])
         new_post.save()
-        serializer = TestApiSerializer(new_post)
+        serializer = ImageApiSerializer(new_post)
 
         return Response(serializer.data)
+
+
+

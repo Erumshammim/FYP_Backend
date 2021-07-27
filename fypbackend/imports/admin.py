@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Products, Imports, ShipmentDetails, Exports, Locals, Customer, ImportIndent, ExportIndent, TestApi
+from .models import Products, Imports, ShipmentDetails, Exports, Locals, Customer, ImportIndent, ExportIndent, Image
 
 # Register your models here.
 admin.site.register(Imports)
@@ -10,4 +10,4 @@ admin.site.register(Locals)
 admin.site.register(Customer)
 admin.site.register(ImportIndent)
 admin.site.register(ExportIndent)
-admin.site.register(TestApi)
+admin.site.register(Image)

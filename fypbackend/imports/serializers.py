@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, TestApi
+from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image
 
 
 # shipment Serializer
@@ -143,7 +143,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         fields = ('id', 'customerName', 'customerType')
 
 
-class TestApiSerializer(serializers.ModelSerializer):
+# image api
+class ImageApiSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TestApi
+        model = Image
         fields = '__all__'

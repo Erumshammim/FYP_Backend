@@ -1,9 +1,9 @@
 # from django.conf.urls import url
 from .views import ImportViewSet, ProductViewSet, ExportViewSet, LocalsViewSet, ExportIndentViewSet, \
-    ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView,\
-    CustomerListView,\
+    ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView, \
+    CustomerListView, \
     CustomerPartnerListView, \
-    CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView, TestApiViewset
+    CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView, ImageApiViewset
 
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
@@ -24,11 +24,12 @@ router.register("customerbroker", CustomerBrokerListView, basename="customerbrok
 router.register("customerbuyer", CustomerBuyerListView, basename="customerbuyer")
 router.register("customerseller", CustomerSellerListView, basename="customerseller")
 router.register("allcustomers", CustomerListView, basename="allcustomers")
-router.register("testapi", TestApiViewset, basename="testapi")
+router.register("imageapi", ImageApiViewset, basename="imageapi")
 
 urlpatterns = [
     # url(r'^api/imports/(?P<pk>\d+)/$', UpdateImport.as_view()),
     # url('', include(router.urls)),
+
 
 ]
 urlpatterns += router.urls
