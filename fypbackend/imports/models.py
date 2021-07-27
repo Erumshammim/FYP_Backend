@@ -59,7 +59,6 @@ class Imports(models.Model):
     partner = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='partners', null=True, default='')
     indenter = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='indenters', null=True, default='')
     totalPrice = models.PositiveIntegerField(blank=True, null=True)
-    image = models.ImageField(default='', blank=True, upload_to=upload_to)
 
     def save(self, *args, **kwargs):
         self.totalPrice = self.priceInKg * self.quantity
@@ -197,7 +196,7 @@ class ExportIndent(models.Model):
         super(ExportIndent, self).save(*args, **kwargs)
 
 
-class TestApi(models.Model):
-    name = models.CharField(max_length=100)
-    cardNo = models.IntegerField()
+# image model
+class Image(models.Model):
+    contractId = models.IntegerField(primary_key=True, default=0)
     image = models.ImageField(default='', blank=True, upload_to=upload_to)
