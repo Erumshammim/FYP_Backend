@@ -2,6 +2,8 @@ from django.db import models
 
 
 # Create your models here.
+def upload_to(instance, filename):
+    return 'posts/{filename}'.format(filename=filename)
 
 
 class Products(models.Model):
@@ -130,6 +132,11 @@ class ImportIndent(models.Model):
         ('Cash', 'Cash'),
         ('Card', 'Card'),
     ]
+    status_choices = [
+        ('Signed', 'Signed'),
+        ('Unsigned', 'Unsigned'),
+        ('Pending', 'Pending'),
+    ]
     dealDate = models.DateField()
     arrivalDate = models.DateField()
     quantity = models.IntegerField()
@@ -138,6 +145,7 @@ class ImportIndent(models.Model):
     productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
+    status = models.CharField(max_length=9, choices=status_choices, default='Signed')
     indentCommission = models.IntegerField()
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
@@ -158,6 +166,11 @@ class ExportIndent(models.Model):
         ('Cash', 'Cash'),
         ('Card', 'Card'),
     ]
+    status_choices = [
+        ('Signed', 'Signed'),
+        ('Unsigned', 'Unsigned'),
+        ('Pending', 'Pending'),
+    ]
     dealDate = models.DateField()
     departureDate = models.DateField()
     quantity = models.IntegerField()
@@ -166,6 +179,7 @@ class ExportIndent(models.Model):
     productDetails = models.ForeignKey(
         Products, on_delete=models.CASCADE, null=True, default='')
     paymentTerm = models.CharField(max_length=4, choices=payment_choices, default='Cash')
+    status = models.CharField(max_length=9, choices=status_choices, default='Signed')
     indentCommission = models.IntegerField()
     shipmentDetails = models.OneToOneField(
         ShipmentDetails, on_delete=models.CASCADE, null=True, default='')
@@ -180,3 +194,9 @@ class ExportIndent(models.Model):
     def save(self, *args, **kwargs):
         self.totalPrice = self.priceInKg * self.quantity
         super(ExportIndent, self).save(*args, **kwargs)
+
+
+# image model
+class Image(models.Model):
+    contractId = models.IntegerField(primary_key=True, default=0)
+    image = models.ImageField(default='', blank=True, upload_to=upload_to)

@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+<<<<<<< HEAD
+=======
+from datetime import timedelta
+>>>>>>> master
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -26,7 +29,6 @@ SECRET_KEY = 'qno=dvmg8x!f=9a^_4sxn-75gldfi1^*72j*g9sgymv+7i493q'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,8 +43,11 @@ INSTALLED_APPS = [
     'accounts',
     'imports',
     'corsheaders',
+<<<<<<< HEAD
     'knox',
     'django_rest_passwordreset',
+=======
+>>>>>>> master
 
 ]
 
@@ -77,7 +82,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fypbackend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -92,6 +96,7 @@ DATABASES = {
     }
 }
 
+<<<<<<< HEAD
 
 
 #Password validation
@@ -111,6 +116,32 @@ AUTH_PASSWORD_VALIDATORS = [
          'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
      },
  ]
+=======
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'floshadesai@gmail.com'
+EMAIL_HOST_PASSWORD = 'hqamlzmbuccresmr'
+EMAIL_USE_TLS = True
+
+# Password validation
+# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
+>>>>>>> master
 
 
 # Internationalization
@@ -125,7 +156,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -143,4 +173,12 @@ REST_FRAMEWORK = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 CORS_ORIGIN_ALLOW_ALL = True
+<<<<<<< HEAD
 CORS_ORIGIN_WHITELIST = ('http://localhost:3000', )
+=======
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+)
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+>>>>>>> master
