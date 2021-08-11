@@ -79,14 +79,17 @@ WSGI_APPLICATION = 'fypbackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+db_password = os.getenv('db_password')
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'ffdatabase',
         'USER': 'postgres',
-        'PASSWORD': 'admin',
+        'PASSWORD': db_password,
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '5432',
     }
 }
 
