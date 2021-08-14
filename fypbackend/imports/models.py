@@ -32,6 +32,16 @@ class Customer(models.Model):
     def __str__(self):
         return self.customerName
 
+# Account Model
+class Account(models.Model):
+    date = models.DateField()
+    particulars = models.TextField()
+    debit = models.PositiveIntegerField(default=0)
+    credit = models.PositiveIntegerField(default=0)
+    balance = models.PositiveIntegerField(default=0, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
+    contract_id = models.PositiveIntegerField(default=0, blank=True, null=True)
+    contract_type = models.CharField(max_length=100, blank=True, null=True)
 
 # this is imports model
 class Imports(models.Model):

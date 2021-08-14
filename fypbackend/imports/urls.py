@@ -3,11 +3,12 @@ from .views import ImportViewSet, ProductViewSet, ExportViewSet, LocalsViewSet, 
     ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView, \
     CustomerListView, \
     CustomerPartnerListView, \
-    CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView, ImageApiViewset
+    CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView, ImageApiViewset, account_list, accounts_list_by_contract, account_detail
 
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path
 
 router = DefaultRouter()
 router.register("imports", ImportViewSet, basename="imports")
@@ -29,8 +30,9 @@ router.register("imageapi", ImageApiViewset, basename="imageapi")
 urlpatterns = [
     # url(r'^api/imports/(?P<pk>\d+)/$', UpdateImport.as_view()),
     # url('', include(router.urls)),
-
-
+    path('accounts/', account_list),
+    path('accounts/<slug:slug>/<int:id>/', accounts_list_by_contract),
+    path('accounts/<int:id>/', account_detail),
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

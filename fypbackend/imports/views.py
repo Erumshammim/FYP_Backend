@@ -1,15 +1,148 @@
 from django.db.models import F
 from django.shortcuts import render
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
-    ExportIndentSerializer, CustomerSerializer, ImageApiSerializer
-from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image
+    ExportIndentSerializer, CustomerSerializer, ImageApiSerializer, AccountSerializer
+from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
-
+from rest_framework.decorators import api_view
+from rest_framework import status
 
 # Create your views here.
+# API for Account Module
+@api_view(['GET', 'POST'])
+def account_list(request):
+    if request.method == 'GET':
+        accounts = Account.objects.all()
+        serializer = AccountSerializer(accounts, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        try:
+            customer_id = data['customer_id']
+            accounts = Account.objects.filter(customer_id=customer_id)
+            number_of_accounts = accounts.count()
+        except:
+            contract_id = data['contract_id']
+            contract_type = data['contract_type']
+            accounts = Account.objects.filter(contract_id=contract_id, contract_type=contract_type)
+            number_of_accounts = accounts.count()
+        if (number_of_accounts == 0):
+            data['balance'] = data['debit']
+            serializer = AccountSerializer(data=data)
+            if (serializer.is_valid()):
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif (number_of_accounts >= 1):
+            total_debit = data['debit']
+            total_credit = data['credit']
+            for account in accounts:
+                total_debit = total_debit + account.debit
+                total_credit = total_credit + account.credit
+            data['balance'] = total_debit - total_credit
+            if data['balance'] < 0:
+                data['balance'] = 0
+            serializer = AccountSerializer(data=data)
+            if (serializer.is_valid()):
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def accounts_list_by_contract(request, slug, id):
+    if slug == 'customers':
+        accounts = Account.objects.filter(customer_id=id)
+    else:
+        accounts = Account.objects.filter(contract_id=id, contract_type=slug)
+    if accounts.count() == 0:
+        return Response({'Response': 'No Cost Sheet Found'})
+    else:
+        serializer = AccountSerializer(accounts, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def account_detail(request, id):
+    try:
+        account = Account.objects.get(id=id)
+    except:
+        return Response({'Response': 'Object Not Found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = AccountSerializer(account)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        if account.debit == data['debit'] and account.credit == data['credit']:
+            serializer = AccountSerializer(account, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors)
+        else:
+            if account.customer != None:
+                accounts = Account.objects.filter(customer_id=account.customer.id)
+            else:
+                accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type)
+            flag = 0
+            difference = 0
+            is_debit = False
+            is_credit = False
+            for i in accounts:
+                if flag == 1:
+                    if is_debit:
+                        i.balance = i.balance + difference
+                    elif is_credit:
+                        i.balance = i.balance - difference
+                    if i.balance < 0:
+                        i.balance = 0
+                    i.save()
+                if i == account:
+                    if account.debit != data['debit']:
+                        difference = account.debit - data['debit']
+                        if difference < 0:
+                            difference = difference * -1
+                        data['balance'] = account.balance + difference
+                        is_debit = True
+                    elif account.credit != data['credit']:
+                        difference = account.credit - data['credit']
+                        if difference < 0:
+                            difference = difference * -1
+                        data['balance'] = account.balance - difference
+                        if data['balance'] < 0:
+                            data['balance'] = 0
+                        is_credit = True
+                    flag = 1
+            serializer = AccountSerializer(account, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+    elif request.method == 'DELETE':
+        debit = account.debit
+        credit = account.credit
+        if account.customer != None:
+            accounts = Account.objects.filter(customer_id=account.customer.id)
+        else:
+            accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type)
+        flag = 0
+        for i in accounts:
+            if flag == 1:
+                i.balance = i.balance - debit
+                i.balance = i.balance + credit
+                if i.balance < 0:
+                    i.balance = 0
+                i.save()
+            if i == account:
+                flag = 1
+                account.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 # API for Import module
 class ImportViewSet(viewsets.ModelViewSet):
     serializer_class = ImportSerializer
