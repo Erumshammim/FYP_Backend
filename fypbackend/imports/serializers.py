@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image
+from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account
 
 
 # shipment Serializer
@@ -142,6 +142,14 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ('id', 'customerName', 'customerType')
 
+# Account Serializer
+class AccountSerializer(serializers.HyperlinkedModelSerializer):
+    customer = CustomerSerializer(read_only=True)
+    customer_id = serializers.IntegerField(write_only=True, required=False)
+
+    class Meta:
+        model = Account
+        fields = ['id', 'date', 'particulars', 'debit', 'credit', 'balance', 'customer_id', 'customer', 'contract_id', 'contract_type']
 
 # image api
 class ImageApiSerializer(serializers.ModelSerializer):

@@ -82,7 +82,6 @@ WSGI_APPLICATION = 'fypbackend.wsgi.application'
 
 db_password = os.getenv('db_password')
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
