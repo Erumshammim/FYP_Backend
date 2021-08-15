@@ -15,19 +15,19 @@ from rest_framework import status
 @api_view(['GET', 'POST'])
 def account_list(request):
     if request.method == 'GET':
-        accounts = Account.objects.all()
+        accounts = Account.objects.all().order_by('id')
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         try:
             customer_id = data['customer_id']
-            accounts = Account.objects.filter(customer_id=customer_id)
+            accounts = Account.objects.filter(customer_id=customer_id).order_by('id')
             number_of_accounts = accounts.count()
         except:
             contract_id = data['contract_id']
             contract_type = data['contract_type']
-            accounts = Account.objects.filter(contract_id=contract_id, contract_type=contract_type)
+            accounts = Account.objects.filter(contract_id=contract_id, contract_type=contract_type).order_by('id')
             number_of_accounts = accounts.count()
         if (number_of_accounts == 0):
             data['balance'] = data['debit']
@@ -56,9 +56,9 @@ def account_list(request):
 @api_view(['GET'])
 def accounts_list_by_contract(request, slug, id):
     if slug == 'customers':
-        accounts = Account.objects.filter(customer_id=id)
+        accounts = Account.objects.filter(customer_id=id).order_by('id')
     else:
-        accounts = Account.objects.filter(contract_id=id, contract_type=slug)
+        accounts = Account.objects.filter(contract_id=id, contract_type=slug).order_by('id')
     if accounts.count() == 0:
         return Response({'Response': 'No Cost Sheet Found'})
     else:
@@ -86,9 +86,9 @@ def account_detail(request, id):
                 return Response(serializer.errors)
         else:
             if account.customer != None:
-                accounts = Account.objects.filter(customer_id=account.customer.id)
+                accounts = Account.objects.filter(customer_id=account.customer.id).order_by('id')
             else:
-                accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type)
+                accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type).order_by('id')
             flag = 0
             difference = 0
             is_debit = False
@@ -96,9 +96,15 @@ def account_detail(request, id):
             for i in accounts:
                 if flag == 1:
                     if is_debit:
-                        i.balance = i.balance + difference
+                        if account.debit < data['debit']:
+                            i.balance = i.balance + difference
+                        else:
+                            i.balance = i.balance - difference
                     elif is_credit:
-                        i.balance = i.balance - difference
+                        if account.credit < data['credit']:
+                            i.balance = i.balance - difference
+                        else:
+                            i.balance = i.balance + difference
                     if i.balance < 0:
                         i.balance = 0
                     i.save()
@@ -107,13 +113,19 @@ def account_detail(request, id):
                         difference = account.debit - data['debit']
                         if difference < 0:
                             difference = difference * -1
-                        data['balance'] = account.balance + difference
+                        if account.debit < data['debit']:
+                            data['balance'] = account.balance + difference
+                        else:
+                            data['balance'] = account.balance - difference
                         is_debit = True
                     elif account.credit != data['credit']:
                         difference = account.credit - data['credit']
                         if difference < 0:
                             difference = difference * -1
-                        data['balance'] = account.balance - difference
+                        if account.credit < data['credit']:
+                            data['balance'] = account.balance - difference
+                        else:
+                            data['balance'] = account.balance + difference
                         if data['balance'] < 0:
                             data['balance'] = 0
                         is_credit = True
@@ -126,9 +138,9 @@ def account_detail(request, id):
         debit = account.debit
         credit = account.credit
         if account.customer != None:
-            accounts = Account.objects.filter(customer_id=account.customer.id)
+            accounts = Account.objects.filter(customer_id=account.customer.id).order_by('id')
         else:
-            accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type)
+            accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type).order_by('id')
         flag = 0
         for i in accounts:
             if flag == 1:
