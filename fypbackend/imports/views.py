@@ -158,7 +158,7 @@ def account_detail(request, id):
 # API for Import module
 class ImportViewSet(viewsets.ModelViewSet):
     serializer_class = ImportSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    #parser_classes = [ MultiPartParser, FormParser]
 
     def get_queryset(self):
         posts = Imports.objects.all()
@@ -189,8 +189,7 @@ class ImportViewSet(viewsets.ModelViewSet):
             quantity=post_data["quantity"], netWeight=post_data["netWeight"],
             paymentTerm=post_data["paymentTerm"], status=post_data["status"],
             shipmentDetails=new_shipment, exporter=exporters, partner=partners, indenter=indenters,
-            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result,
-            image=post_data["image"])
+            productDetails=product_data, priceInKg=post_data["priceInKg"], totalPrice=result)
 
         new_post.save()
 
@@ -227,14 +226,14 @@ class ImportViewSet(viewsets.ModelViewSet):
         import_object.netWeight = data["netWeight"]
         import_object.paymentTerm = data[" paymentTerm"]
         import_object.status = data[" status"]
-        import_object.productDetails = data["productDetails"]
+        import_object.productDetails = Products.objects.get(id=data["productDetails"])
         import_object.shipmentDetails = data["shipmentDetails"]
         import_object.exporter = Imports.objects.filter(id=data).update(data["exporter"])
         import_object.partner = data["partner"]
         import_object.indenter = data["indenter"]
         import_object.save()
         serializer = ImportSerializer(import_object)
-        return Response(serializer.data)
+        return Response({"Product": Products.objects.get(id=data["productDetails"])})
 
     def patch(self, request, *args, **kwargs):
         import_object = Imports.objects.get()
