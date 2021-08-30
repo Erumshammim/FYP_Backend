@@ -15,10 +15,23 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Products
         fields = '__all__'
 
+# customer serializer
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ('id', 'customerName', 'customerType')
 
 # Import serializer
 class ImportSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
+    productId = serializers.IntegerField(write_only=True)
+    exporterId = serializers.IntegerField(write_only=True)
+    indenterId = serializers.IntegerField(write_only=True)
+    partnerId = serializers.IntegerField(write_only=True)
+    productDetails = ProductSerializer(read_only=True)
+    exporter = CustomerSerializer(read_only=True)
+    partner = CustomerSerializer(read_only=True)
+    indenter = CustomerSerializer(read_only=True)
 
     # priority_choices = serializers.SerializerMethodField()
 
@@ -27,12 +40,20 @@ class ImportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Imports
-        fields = '__all__'
-        # fields = ('id', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
-        #           'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
+        #fields = '__all__'
+        fields = ('id', 'productId', 'exporterId', 'partnerId', 'indenterId', 'dealDate', 'arrivalDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
+                   'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
         depth = 1
 
     def update(self, instance, validated_data):
+        productId = validated_data.pop('productId')
+        exporterId = validated_data.pop('exporterId')
+        partnerId = validated_data.pop('partnerId')
+        indenterId = validated_data.pop('indenterId')
+        instance.productDetails = Products.objects.get(id=productId)
+        instance.exporter = Customer.objects.get(id=exporterId)
+        instance.partner = Customer.objects.get(id=partnerId)
+        instance.indenter = Customer.objects.get(id=indenterId)
         nested_serializer = self.fields['shipmentDetails']
         nested_instance = instance.shipmentDetails
         nested_data = validated_data.pop('shipmentDetails')
@@ -52,6 +73,14 @@ class ImportSerializer(serializers.ModelSerializer):
 # export serializer
 class ExportSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
+    productId = serializers.IntegerField(write_only=True)
+    exporterId = serializers.IntegerField(write_only=True)
+    indenterId = serializers.IntegerField(write_only=True)
+    partnerId = serializers.IntegerField(write_only=True)
+    productDetails = ProductSerializer(read_only=True)
+    exporter = CustomerSerializer(read_only=True)
+    partner = CustomerSerializer(read_only=True)
+    indenter = CustomerSerializer(read_only=True)
 
     # priority_choices = serializers.SerializerMethodField()
     #
@@ -61,11 +90,19 @@ class ExportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exports
         fields = '__all__'
-        # fields = ('id', 'dealDate', 'departureDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
-        #           'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
+        fields = ('id', 'productId', 'exporterId', 'partnerId', 'indenterId', 'dealDate', 'departureDate', 'quantity', 'netWeight', 'productDetails', 'paymentTerm',
+                   'status', 'shipmentDetails', 'exporter', 'partner', 'indenter', 'totalPrice', 'priceInKg')
         depth = 1
 
     def update(self, instance, validated_data):
+        productId = validated_data.pop('productId')
+        exporterId = validated_data.pop('exporterId')
+        partnerId = validated_data.pop('partnerId')
+        indenterId = validated_data.pop('indenterId')
+        instance.productDetails = Products.objects.get(id=productId)
+        instance.exporter = Customer.objects.get(id=exporterId)
+        instance.partner = Customer.objects.get(id=partnerId)
+        instance.indenter = Customer.objects.get(id=indenterId)
         nested_serializer = self.fields['shipmentDetails']
         nested_instance = instance.shipmentDetails
         nested_data = validated_data.pop('shipmentDetails')
@@ -80,18 +117,45 @@ class LocalSerializer(serializers.ModelSerializer):
     def get_priority_choices(self, obj):
         return [choice[0] for choice in Locals.payment_choices]
 
+    productId = serializers.IntegerField(write_only=True)
+    partnerId = serializers.IntegerField(write_only=True)
+    brokerId = serializers.IntegerField(write_only=True)
+    buyerId = serializers.IntegerField(write_only=True)
+    productDetails = ProductSerializer(read_only=True)
+    partner = CustomerSerializer(read_only=True)
+    broker = CustomerSerializer(read_only=True)
+    buyer = CustomerSerializer(read_only=True)
+
     class Meta:
         model = Locals
         fields = (
-            'id', 'dealDate', 'quantity', 'netWeight', 'priceInKg', 'productDetails', 'load', 'condition',
+            'id', 'productId', 'partnerId', 'brokerId', 'buyerId', 'dealDate', 'quantity', 'netWeight', 'priceInKg', 'productDetails', 'load', 'condition',
             'paymentTerm',
             'status', 'partner', 'buyer', 'broker', 'totalPrice')
         depth = 1
 
+    def update(self, instance, validated_data):
+        productId = validated_data.pop('productId')
+        brokerId = validated_data.pop('brokerId')
+        partnerId = validated_data.pop('partnerId')
+        buyerId = validated_data.pop('buyerId')
+        instance.productDetails = Products.objects.get(id=productId)
+        instance.broker = Customer.objects.get(id=brokerId)
+        instance.partner = Customer.objects.get(id=partnerId)
+        instance.buyer = Customer.objects.get(id=buyerId)
+        return super(LocalSerializer, self).update(instance, validated_data)
 
 # importindent serializer
 class ImportIndentSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
+    productId = serializers.IntegerField(write_only=True)
+    partnerId = serializers.IntegerField(write_only=True)
+    sellerId = serializers.IntegerField(write_only=True)
+    buyerId = serializers.IntegerField(write_only=True)
+    productDetails = ProductSerializer(read_only=True)
+    partner = CustomerSerializer(read_only=True)
+    seller = CustomerSerializer(read_only=True)
+    buyer = CustomerSerializer(read_only=True)
 
     # priority_choices = serializers.SerializerMethodField()
     #
@@ -104,6 +168,14 @@ class ImportIndentSerializer(serializers.ModelSerializer):
         depth = 1
 
     def update(self, instance, validated_data):
+        productId = validated_data.pop('productId')
+        sellerId = validated_data.pop('sellerId')
+        partnerId = validated_data.pop('partnerId')
+        buyerId = validated_data.pop('buyerId')
+        instance.productDetails = Products.objects.get(id=productId)
+        instance.seller = Customer.objects.get(id=sellerId)
+        instance.partner = Customer.objects.get(id=partnerId)
+        instance.buyer = Customer.objects.get(id=buyerId)
         nested_serializer = self.fields['shipmentDetails']
         nested_instance = instance.shipmentDetails
         nested_data = validated_data.pop('shipmentDetails')
@@ -114,6 +186,14 @@ class ImportIndentSerializer(serializers.ModelSerializer):
 # exportindent serializer
 class ExportIndentSerializer(serializers.ModelSerializer):
     shipmentDetails = ShipmentSerializer()
+    productId = serializers.IntegerField(write_only=True)
+    partnerId = serializers.IntegerField(write_only=True)
+    sellerId = serializers.IntegerField(write_only=True)
+    buyerId = serializers.IntegerField(write_only=True)
+    productDetails = ProductSerializer(read_only=True)
+    partner = CustomerSerializer(read_only=True)
+    seller = CustomerSerializer(read_only=True)
+    buyer = CustomerSerializer(read_only=True)
 
     # priority_choices = serializers.SerializerMethodField()
 
@@ -129,18 +209,20 @@ class ExportIndentSerializer(serializers.ModelSerializer):
         depth = 1
 
     def update(self, instance, validated_data):
+        productId = validated_data.pop('productId')
+        sellerId = validated_data.pop('sellerId')
+        partnerId = validated_data.pop('partnerId')
+        buyerId = validated_data.pop('buyerId')
+        instance.productDetails = Products.objects.get(id=productId)
+        instance.seller = Customer.objects.get(id=sellerId)
+        instance.partner = Customer.objects.get(id=partnerId)
+        instance.buyer = Customer.objects.get(id=buyerId)
         nested_serializer = self.fields['shipmentDetails']
         nested_instance = instance.shipmentDetails
         nested_data = validated_data.pop('shipmentDetails')
         nested_serializer.update(nested_instance, nested_data)
         return super(ExportIndentSerializer, self).update(instance, validated_data)
 
-
-# customer serializer
-class CustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ('id', 'customerName', 'customerType')
 
 # Account Serializer
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
