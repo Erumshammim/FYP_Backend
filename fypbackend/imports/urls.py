@@ -3,7 +3,10 @@ from .views import ImportViewSet, ProductViewSet, ExportViewSet, LocalsViewSet, 
     ImportIndentViewSet, CustomerExporterListView, CustomerImporterListView, CustomerIndenterListView, \
     CustomerListView, \
     CustomerPartnerListView, \
-    CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView, ImageApiViewset, account_list, accounts_list_by_contract, account_detail
+    CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView, ImageApiViewset, \
+    account_list, accounts_list_by_contract, account_detail, import_list_by_status, \
+    export_list_by_status, local_list_by_status, import_indent_list_by_status, export_indent_list_by_status
+
 
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
@@ -33,6 +36,11 @@ urlpatterns = [
     path('accounts/', account_list),
     path('accounts/<slug:slug>/<int:id>/', accounts_list_by_contract),
     path('accounts/<int:id>/', account_detail),
+    path('imports_by_status/', import_list_by_status),
+    path('exports_by_status/', export_list_by_status),
+    path('locals_by_status/', local_list_by_status),
+    path('import_indents_by_status/', import_indent_list_by_status),
+    path('export_indents_by_status/', export_indent_list_by_status),
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
