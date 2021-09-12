@@ -31,6 +31,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         if validated_data['is_admin'] == True:
             user.is_superuser = True
+            user.is_staff = True
         if validated_data['is_data_entry'] == True:
             user.is_staff = True
         user.save()
