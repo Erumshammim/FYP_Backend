@@ -1,15 +1,45 @@
 from django.contrib.auth import login
-
+from django.contrib.auth import get_user_model
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
 
 from rest_framework import generics, permissions
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
 from knox.models import AuthToken
 from .serializers import UserSerializer, RegisterSerializer, ChangePasswordSerializer
 from django.views.decorators.debug import sensitive_post_parameters
-
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
+
+
+
+@api_view(['GET'])
+def users_list(request):
+    if request.method == 'GET':
+        User = get_user_model()
+        users = User.objects.all()
+        output = []
+        for user in users:
+            temp_user = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+            output.append(temp_user)
+        #serializer = AccountSerializer(accounts, many=True)
+        return Response(output)
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def user_edit(request):
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        user = request.user
+        user.username = data['username']
+        user.email = data['email']
+        user.save()
+        return Response({'response': "success"})
 
 # Register API
 class RegisterAPI(generics.GenericAPIView):

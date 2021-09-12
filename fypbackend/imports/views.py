@@ -10,7 +10,41 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
-# Create your views here.
+@api_view(['GET'])
+def import_list_by_status(request):
+    if request.method == 'GET':
+        imports = Imports.objects.filter(status='Pending')
+        serializer = ImportSerializer(imports, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def export_list_by_status(request):
+    if request.method == 'GET':
+        exports = Exports.objects.filter(status='Pending')
+        serializer = ExportSerializer(exports, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def local_list_by_status(request):
+    if request.method == 'GET':
+        locals = Locals.objects.filter(status='Pending')
+        serializer = LocalSerializer(locals, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def import_indent_list_by_status(request):
+    if request.method == 'GET':
+        import_indents = ImportIndent.objects.filter(status='Pending')
+        serializer = ImportIndentSerializer(import_indents, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def export_indent_list_by_status(request):
+    if request.method == 'GET':
+        export_indents = ExportIndent.objects.filter(status='Pending')
+        serializer = ExportIndentSerializer(export_indents, many=True)
+        return Response(serializer.data)
+
 # API for Account Module
 @api_view(['GET', 'POST'])
 def account_list(request):
