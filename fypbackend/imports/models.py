@@ -25,6 +25,12 @@ class ShipmentDetails(models.Model):
         return self.blNo
 
 
+class BackAccount(models.Model):
+    title = models.CharField(max_length=350)
+
+    def __str__(self):
+        return self.title
+
 class Customer(models.Model):
     customerName = models.CharField(max_length=100)
     customerType = models.CharField(max_length=100)
@@ -42,6 +48,7 @@ class Account(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     contract_id = models.PositiveIntegerField(default=0, blank=True, null=True)
     contract_type = models.CharField(max_length=100, blank=True, null=True)
+    back_account = models.ForeignKey(BackAccount, on_delete=models.CASCADE, blank=True, null=True)
 
 # this is imports model
 class Imports(models.Model):
@@ -210,3 +217,7 @@ class ExportIndent(models.Model):
 class Image(models.Model):
     contractId = models.IntegerField(primary_key=True, default=0)
     image = models.ImageField(default='', blank=True, upload_to=upload_to)
+
+class Photo(models.Model):
+    imports = models.ForeignKey(Imports, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='imports/%Y/%m/%d')

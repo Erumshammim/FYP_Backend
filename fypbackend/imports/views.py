@@ -3,12 +3,34 @@ from django.shortcuts import render
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
-    ExportIndentSerializer, CustomerSerializer, ImageApiSerializer, AccountSerializer
-from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account
+    ExportIndentSerializer, CustomerSerializer, ImageApiSerializer, AccountSerializer, BankAccountSerializer, PhotoSerializer
+from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account, BackAccount, Photo
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from rest_framework.views import APIView
+
+@api_view(['GET'])
+def photo_list_by_imports(request, id):
+    if request.method == 'GET':
+        photos = Photo.objects.filter(imports_id=id)
+        serializer = PhotoSerializer(photos, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET', 'POST'])
+def bank_account_list(request):
+    if request.method == 'GET':
+        bank_accounts = BackAccount.objects.all()
+        serializer = BankAccountSerializer(bank_accounts, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = BankAccountSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def import_list_by_status(request):
@@ -59,10 +81,15 @@ def account_list(request):
             accounts = Account.objects.filter(customer_id=customer_id).order_by('id')
             number_of_accounts = accounts.count()
         except:
-            contract_id = data['contract_id']
-            contract_type = data['contract_type']
-            accounts = Account.objects.filter(contract_id=contract_id, contract_type=contract_type).order_by('id')
-            number_of_accounts = accounts.count()
+            try:
+                contract_id = data['contract_id']
+                contract_type = data['contract_type']
+                accounts = Account.objects.filter(contract_id=contract_id, contract_type=contract_type).order_by('id')
+                number_of_accounts = accounts.count()
+            except:
+                back_account_id = data['back_account_id']
+                accounts = Account.objects.filter(back_account_id=back_account_id).order_by('id')
+                number_of_accounts = accounts.count()
         if (number_of_accounts == 0):
             data['balance'] = data['debit']
             serializer = AccountSerializer(data=data)
@@ -91,6 +118,8 @@ def account_list(request):
 def accounts_list_by_contract(request, slug, id):
     if slug == 'customers':
         accounts = Account.objects.filter(customer_id=id).order_by('id')
+    elif slug == 'bank_account':
+        accounts = Account.objects.filter(back_account_id=id).order_by('id')
     else:
         accounts = Account.objects.filter(contract_id=id, contract_type=slug).order_by('id')
     if accounts.count() == 0:
@@ -121,6 +150,8 @@ def account_detail(request, id):
         else:
             if account.customer != None:
                 accounts = Account.objects.filter(customer_id=account.customer.id).order_by('id')
+            elif account.back_account != None:
+                accounts = Account.objects.filter(back_account_id=account.back_account.id).order_by('id')
             else:
                 accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type).order_by('id')
             flag = 0
@@ -173,6 +204,8 @@ def account_detail(request, id):
         credit = account.credit
         if account.customer != None:
             accounts = Account.objects.filter(customer_id=account.customer.id).order_by('id')
+        elif account.back_account != None:
+            accounts = Account.objects.filter(back_account_id=account.back_account.id).order_by('id')
         else:
             accounts = Account.objects.filter(contract_id=account.contract_id, contract_type=account.contract_type).order_by('id')
         flag = 0
@@ -733,5 +766,19 @@ class ImageApiViewset(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+class photo_list(APIView):
+    parser_classes = (MultiPartParser, FormParser)
 
+    def get(self, request, format=None):
+        photos = Photo.objects.all()
+        serializer = PhotoSerializer(photos, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = PhotoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

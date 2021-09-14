@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account
+from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account, BackAccount, Photo
 
 
 # shipment Serializer
@@ -224,17 +224,36 @@ class ExportIndentSerializer(serializers.ModelSerializer):
         return super(ExportIndentSerializer, self).update(instance, validated_data)
 
 
+#BankAccount Serializer
+class BankAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BackAccount
+        fields = '__all__'
+
+
 # Account Serializer
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
     customer = CustomerSerializer(read_only=True)
     customer_id = serializers.IntegerField(write_only=True, required=False)
+    back_account = BankAccountSerializer(read_only=True)
+    back_account_id = serializers.IntegerField(write_only=True, required=False)
+
 
     class Meta:
         model = Account
-        fields = ['id', 'date', 'particulars', 'debit', 'credit', 'balance', 'customer_id', 'customer', 'contract_id', 'contract_type']
+        fields = ['id', 'date', 'particulars', 'debit', 'credit', 'balance', 'customer_id', 'customer', 
+                    'contract_id', 'contract_type', 'back_account', 'back_account_id']
 
 # image api
 class ImageApiSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = '__all__'
+
+class PhotoSerializer(serializers.HyperlinkedModelSerializer):
+    #imports = ImportSerializer(read_only=True)
+    imports_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Photo
+        fields = ['id', 'photo', 'imports_id']
