@@ -6,7 +6,7 @@ from .views import ImportViewSet, ProductViewSet, ExportViewSet, LocalsViewSet, 
     CustomerBuyerListView, CustomerBrokerListView, CustomerSellerListView, ImageApiViewset, \
     account_list, accounts_list_by_contract, account_detail, import_list_by_status, \
     export_list_by_status, local_list_by_status, import_indent_list_by_status, export_indent_list_by_status, \
-    bank_account_list, photo_list, photo_list_by_imports
+    bank_account_list, photo_list, photo_list_by_imports, photo_detail
 
 
 from rest_framework.routers import DefaultRouter
@@ -53,6 +53,7 @@ urlpatterns = [
     #Photo imports
     path('photos/imports/', photo_list.as_view()),
     path('photos/imports/<int:id>/', photo_list_by_imports),
+    path('photo/imports/<int:id>/', photo_detail.as_view()),
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
