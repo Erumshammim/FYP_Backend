@@ -782,3 +782,27 @@ class photo_list(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class photo_detail(APIView):
+    def get_object(self, id):
+        try:
+            return Photo.objects.get(id=id)
+        except:
+            raise Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoSerializer(photo)
+        return Response(serializer.data)
+
+    def delete(self, request, id, format=None):
+        photo = self.get_object(id)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoSerializer(photo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -30,6 +30,14 @@ def users_list(request):
         #serializer = AccountSerializer(accounts, many=True)
         return Response(output)
 
+@api_view(['DELETE'])
+def user_delete(request, id):
+    if request.method == 'DELETE':
+        User = get_user_model()
+        user = User.objects.get(id=id)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 @api_view(['PUT'])
 @permission_classes([permissions.IsAuthenticated])
 def user_edit(request):
