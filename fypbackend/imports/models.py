@@ -221,3 +221,19 @@ class Image(models.Model):
 class Photo(models.Model):
     imports = models.ForeignKey(Imports, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='imports/%Y/%m/%d')
+
+class PhotoExports(models.Model):
+    exports = models.ForeignKey(Exports, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='exports/%Y/%m/%d')
+
+class PhotoLocals(models.Model):
+    locals = models.ForeignKey(Locals, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='locals/%Y/%m/%d')
+
+class PhotoImportIndent(models.Model):
+    import_indents = models.ForeignKey(ImportIndent, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='import_indents/%Y/%m/%d')
+
+class PhotoExportIndent(models.Model):
+    exports = models.ForeignKey(ExportIndent, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='export_indents/%Y/%m/%d')

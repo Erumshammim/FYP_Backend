@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account, BackAccount, Photo
+from .models import Products, Imports, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account, BackAccount, Photo, PhotoExports, PhotoLocals, PhotoImportIndent, PhotoExportIndent
 
 
 # shipment Serializer
@@ -257,3 +257,31 @@ class PhotoSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Photo
         fields = ['id', 'photo', 'imports_id']
+
+class PhotoExportsSerializer(serializers.HyperlinkedModelSerializer):
+    exports_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = PhotoExports
+        fields = ['id', 'photo', 'exports_id']
+
+class PhotoLocalsSerializer(serializers.HyperlinkedModelSerializer):
+    locals_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = PhotoLocals
+        fields = ['id', 'photo', 'locals_id']
+
+class PhotoImportIndentSerializer(serializers.HyperlinkedModelSerializer):
+    import_indents_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = PhotoImportIndent
+        fields = ['id', 'photo', 'import_indents_id']
+
+class PhotoExportIndentSerializer(serializers.HyperlinkedModelSerializer):
+    exports_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = PhotoExportIndent
+        fields = ['id', 'photo', 'exports_id']

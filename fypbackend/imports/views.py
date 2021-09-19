@@ -3,8 +3,10 @@ from django.shortcuts import render
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import ImportSerializer, ProductSerializer, ExportSerializer, \
     LocalSerializer, ImportIndentSerializer, \
-    ExportIndentSerializer, CustomerSerializer, ImageApiSerializer, AccountSerializer, BankAccountSerializer, PhotoSerializer
-from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account, BackAccount, Photo
+    ExportIndentSerializer, CustomerSerializer, ImageApiSerializer, AccountSerializer, BankAccountSerializer, PhotoSerializer, \
+    PhotoExportsSerializer, PhotoLocalsSerializer, PhotoImportIndentSerializer, PhotoExportIndentSerializer
+from .models import Imports, Products, Exports, Locals, ImportIndent, ExportIndent, Customer, ShipmentDetails, Image, Account, BackAccount, Photo, \
+    PhotoExports, PhotoLocals, PhotoImportIndent, PhotoExportIndent
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -16,6 +18,34 @@ def photo_list_by_imports(request, id):
     if request.method == 'GET':
         photos = Photo.objects.filter(imports_id=id)
         serializer = PhotoSerializer(photos, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def photo_list_by_exports(request, id):
+    if request.method == 'GET':
+        photos = PhotoExports.objects.filter(exports_id=id)
+        serializer = PhotoExportsSerializer(photos, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def photo_list_by_locals(request, id):
+    if request.method == 'GET':
+        photos = PhotoLocals.objects.filter(locals_id=id)
+        serializer = PhotoLocalsSerializer(photos, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def photo_list_by_import_indent(request, id):
+    if request.method == 'GET':
+        photos = PhotoImportIndent.objects.filter(import_indents_id=id)
+        serializer = PhotoImportIndentSerializer(photos, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def photo_list_by_export_indent(request, id):
+    if request.method == 'GET':
+        photos = PhotoExportIndent.objects.filter(exports_id=id)
+        serializer = PhotoExportIndentSerializer(photos, many=True)
         return Response(serializer.data)
 
 @api_view(['GET', 'POST'])
@@ -802,6 +832,178 @@ class photo_detail(APIView):
     def put(self, request, id, format=None):
         photo = self.get_object(id)
         serializer = PhotoSerializer(photo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#Photo API for Exports
+class photo_list_exports(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, format=None):
+        photos = PhotoExports.objects.all()
+        serializer = PhotoExportsSerializer(photos, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = PhotoExportsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class photo_detail_exports(APIView):
+    def get_object(self, id):
+        try:
+            return PhotoExports.objects.get(id=id)
+        except:
+            raise Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoExportsSerializer(photo)
+        return Response(serializer.data)
+
+    def delete(self, request, id, format=None):
+        photo = self.get_object(id)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoExportsSerializer(photo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#Photo API for Locals
+class photo_list_locals(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, format=None):
+        photos = PhotoLocals.objects.all()
+        serializer = PhotoLocalsSerializer(photos, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = PhotoLocalsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class photo_detail_locals(APIView):
+    def get_object(self, id):
+        try:
+            return PhotoLocals.objects.get(id=id)
+        except:
+            raise Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoLocalsSerializer(photo)
+        return Response(serializer.data)
+
+    def delete(self, request, id, format=None):
+        photo = self.get_object(id)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoLocalsSerializer(photo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#Photo API for ImportIndent
+class photo_list_import_indent(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, format=None):
+        photos = PhotoImportIndent.objects.all()
+        serializer = PhotoImportIndentSerializer(photos, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = PhotoImportIndentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class photo_detail_import_indent(APIView):
+    def get_object(self, id):
+        try:
+            return PhotoImportIndent.objects.get(id=id)
+        except:
+            raise Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoImportIndentSerializer(photo)
+        return Response(serializer.data)
+
+    def delete(self, request, id, format=None):
+        photo = self.get_object(id)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoImportIndentSerializer(photo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#Photo API for ExportIndent
+class photo_list_export_indent(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, format=None):
+        photos = PhotoExportIndent.objects.all()
+        serializer = PhotoExportIndentSerializer(photos, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = PhotoExportIndentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class photo_detail_export_indent(APIView):
+    def get_object(self, id):
+        try:
+            return PhotoExportIndent.objects.get(id=id)
+        except:
+            raise Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoExportIndentSerializer(photo)
+        return Response(serializer.data)
+
+    def delete(self, request, id, format=None):
+        photo = self.get_object(id)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, id, format=None):
+        photo = self.get_object(id)
+        serializer = PhotoExportIndentSerializer(photo, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
